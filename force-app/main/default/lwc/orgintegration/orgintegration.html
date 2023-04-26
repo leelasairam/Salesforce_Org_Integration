@@ -1,0 +1,87 @@
+<template>
+    <div style="background-color: white;padding:0.5rem">
+        <!--New Button-->
+        <div style="text-align:right;margin-bottom:1rem">
+            <lightning-button label="New Case" variant="brand" onclick={ShowNewModal}></lightning-button>
+        </div>
+
+        <!--Datatable-->
+        <div>
+            <lightning-datatable key-field="Id" data={Cases} columns={cols} onrowaction={RowActions} hide-checkbox-column show-row-number-column></lightning-datatable>
+        </div>
+
+        <!--New Case Modal-->
+        <template if:true={NewModal}>
+            <!-- Modal -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Header -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={HideNewModal}>
+                            <lightning-icon icon-name="utility:close"
+                                alternative-text="close"
+                                variant="inverse"
+                                size="small" ></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Case</h2>
+                    </header>
+                    <!-- Body -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <lightning-card>
+                            <lightning-input label="Subject" class="subject"></lightning-input>
+                            <lightning-input label="Description" class="description"></lightning-input>
+                            <lightning-combobox label="Priority" options={priorities} class="priority"></lightning-combobox>
+                        </lightning-card>
+                    </div>
+                    <!-- Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Save" variant="brand" style="margin-right: 0.5rem;" slot="actions" onclick={CreateCase}></lightning-button>
+                        <button class="slds-button slds-button_neutral" onclick={HideNewModal} title="Cancel">Cancel</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!--Edit Case Modal-->
+        <template if:true={EditModal}>
+            <!-- Modal -->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Header -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={HideEditModal}>
+                            <lightning-icon icon-name="utility:close"
+                                alternative-text="close"
+                                variant="inverse"
+                                size="small" ></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Edit Case</h2>
+                    </header>
+                    <!-- Body -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                        <lightning-card>
+                            <lightning-input label="CaseId" class="Id1" disabled="true"></lightning-input>
+                            <lightning-input label="Subject" class="subject1"></lightning-input>
+                            <lightning-input label="Description" class="description1"></lightning-input>
+                            <lightning-combobox label="Priority" options={priorities} class="priority1"></lightning-combobox>
+                        </lightning-card>
+                    </div>
+                    <!-- Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Save" variant="brand" style="margin-right: 0.5rem;" slot="actions" onclick={EditCase}></lightning-button>
+                        <button class="slds-button slds-button_neutral" onclick={HideEditModal} title="Cancel">Cancel</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+    </div>
+
+    <div if:true={load}>
+        <lightning-spinner class="slds-is-fixed" variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
+    </div>
+</template>
