@@ -2,7 +2,7 @@
     <div style="background-color: white;padding:0.5rem">
         <!--New Button-->
         <div style="text-align:right;margin-bottom:1rem">
-            <lightning-button label="New Case" variant="brand" onclick={ShowNewModal}></lightning-button>
+            <lightning-button icon-name="utility:add" label="New Case" variant="brand" onclick={ShowNewModal}></lightning-button>
         </div>
 
         <!--Datatable-->
@@ -29,6 +29,15 @@
                     <!-- Body -->
                     <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                         <lightning-card>
+                            <div slot="title" if:true={load}>
+                                <div class="loader">
+                                    <div></div> 
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                               <!--<lightning-icon icon-name="utility:spinner"></lightning-icon> saving...-->
+                            </div>
                             <lightning-input label="Subject" class="subject"></lightning-input>
                             <lightning-input label="Description" class="description"></lightning-input>
                             <lightning-combobox label="Priority" options={priorities} class="priority"></lightning-combobox>
@@ -63,6 +72,16 @@
                     <!-- Body -->
                     <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
                         <lightning-card>
+                            <div slot="title" if:true={load}>
+                                
+                                <div class="loader">
+                                    <div></div> 
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                  </div>
+                                <!--<lightning-icon icon-name="utility:spinner"></lightning-icon> updating...-->
+                             </div>
                             <lightning-input label="CaseId" class="Id1" disabled="true"></lightning-input>
                             <lightning-input label="Subject" class="subject1"></lightning-input>
                             <lightning-input label="Description" class="description1"></lightning-input>
@@ -82,6 +101,9 @@
     </div>
 
     <div if:true={load}>
+        <lightning-spinner class="slds-is-fixed" variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
+    </div>
+    <div if:false={InitialData}>
         <lightning-spinner class="slds-is-fixed" variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
     </div>
 </template>

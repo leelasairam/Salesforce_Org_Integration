@@ -1,10 +1,11 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track,wire } from 'lwc';
 import GetCaseById from '@salesforce/apex/CaseManagerClient.GetCaseById';
 import NewCase from '@salesforce/apex/CaseManagerClient.NewCase';
 import UpdateCase from '@salesforce/apex/CaseManagerClient.UpdateCase';
 import DeleteCase from '@salesforce/apex/CaseManagerClient.DeleteCase';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import LightningConfirm from 'lightning/confirm';
+import { refreshApex } from '@salesforce/apex';
 
 export default class Orgintegration extends LightningElement {
     @track Cases=[];
@@ -12,6 +13,8 @@ export default class Orgintegration extends LightningElement {
     @track EditModal=false;
     @track load = false;
     @track EditValues;
+    @track InitialData=false;
+    @track WiredCases;
     get priorities() {
         return [
             { label: 'Low', value: 'Low' },
@@ -35,8 +38,16 @@ export default class Orgintegration extends LightningElement {
         },
     ];
 
-    connectedCallback(){
-        this.GetCases();
+    @wire(GetCaseById)
+    GetCases(result){
+        this.WiredCases=result;
+        if(result.error){
+            this.Toast('Error','Something went wrong','error');
+        }
+        else{
+            this.Cases = result.data;
+            this.InitialData=true;
+        }
     }
 
     renderedCallback(){
@@ -58,18 +69,6 @@ export default class Orgintegration extends LightningElement {
         this.dispatchEvent(event);
     }
 
-    async GetCases(){
-        try{
-            this.load=true;
-            const data = await GetCaseById();
-            this.Cases = data;
-            this.load=false;
-        }
-        catch(error){
-            this.Toast('Error',error,'error');
-        }
-    }
-
     ShowNewModal(){
         this.NewModal = true;
     }
@@ -89,6 +88,8 @@ export default class Orgintegration extends LightningElement {
                 this.load=false;
                 this.NewCase=false;
                 this.Toast('Success!',`Case created successfully [Id:${result}]`,'success');
+                this.HideNewModal();
+                refreshApex(this.WiredCases);
             })
             .catch(error => {
                 this.Toast('Error',error,'error');
@@ -121,6 +122,7 @@ export default class Orgintegration extends LightningElement {
                 .then(result => {
                     this.load=false;
                     this.Toast('Success!','Case deleted successfuly','success');
+                    refreshApex(this.WiredCases);
                 })
                 .catch(error => {
                     this.Toast('Error',error,'error');
@@ -149,8 +151,9 @@ export default class Orgintegration extends LightningElement {
         await UpdateCase({CaseId:caseid,Fields:JSON.stringify(FieldsandValues)})
         .then(result => {
             this.load = false;
-            this.Toast('Success!',`Case updated successfully [ID:${result}]`,'success');
             this.HideEditModal();
+            this.Toast('Success!',`Case updated successfully [ID:${result}]`,'success');
+            refreshApex(this.WiredCases);
         })
         .catch(error => {
             this.Toast('Error',error,'error');
