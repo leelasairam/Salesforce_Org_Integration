@@ -8,6 +8,10 @@
         <!--Datatable-->
         <div>
             <lightning-datatable key-field="Id" data={Cases} columns={cols} onrowaction={RowActions} hide-checkbox-column show-row-number-column></lightning-datatable>
+            <br/>
+            <div style="text-align: center;">
+                <lightning-button class="loadmore" icon-name="utility:refresh" label="Load More" onclick={loadMoreData} variant="brand-outline"></lightning-button>
+            </div>
         </div>
 
         <!--New Case Modal-->
@@ -101,9 +105,6 @@
     </div>
 
     <div if:true={load}>
-        <lightning-spinner class="slds-is-fixed" variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
-    </div>
-    <div if:false={InitialData}>
         <lightning-spinner class="slds-is-fixed" variant="brand" alternative-text="Loading" size="medium"></lightning-spinner>
     </div>
 </template>

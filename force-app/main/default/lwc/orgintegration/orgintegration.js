@@ -13,8 +13,8 @@ export default class Orgintegration extends LightningElement {
     @track EditModal=false;
     @track load = false;
     @track EditValues;
-    @track InitialData=false;
-    @track WiredCases;
+    @track Limit=20;
+    @track Offset=0;
     get priorities() {
         return [
             { label: 'Low', value: 'Low' },
@@ -38,16 +38,27 @@ export default class Orgintegration extends LightningElement {
         },
     ];
 
-    @wire(GetCaseById)
-    GetCases(result){
-        this.WiredCases=result;
-        if(result.error){
-            this.Toast('Error','Something went wrong','error');
+    connectedCallback(){
+        this.GetCases();
+    }
+
+    async GetCases(){
+       try{
+        this.load=true;
+        let AllCases = await GetCaseById({L:this.Limit,O:this.Offset});
+        if(AllCases.length==0){
+            this.template.querySelector('.loadmore').style='display:none';
+            this.Toast('That\'s it','No more data available','info');
         }
-        else{
-            this.Cases = result.data;
-            this.InitialData=true;
-        }
+        let UpdatedList = [...this.Cases,...AllCases];
+        console.log(UpdatedList.length);
+        this.Cases = UpdatedList;
+        this.load=false;
+       }
+       catch(error){
+        this.Toast('Error',error,'error');
+       }
+
     }
 
     renderedCallback(){
@@ -158,6 +169,17 @@ export default class Orgintegration extends LightningElement {
         .catch(error => {
             this.Toast('Error',error,'error');
         });
+    }
+
+    loadMoreData(){
+        if(this.Cases.length % 20 == 0){
+            this.Offset = this.Offset+this.Limit;
+            this.GetCases();
+        }
+        else{
+            this.template.querySelector('.loadmore').style='display:none';
+            this.Toast('That\'s it','No more data available','info');
+        }
     }
 
 }
